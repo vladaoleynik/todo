@@ -3,21 +3,25 @@ __author__ = 'vladaoleynik'
 
 import redis
 import json
+import argparse
 
 
-class Task(object):
+class List(argparse.Action):
 
-    def __init__(self, task_id, description, priority, deadline):
-        self.id = task_id
-        self.context = dict(description=description, priority=priority, deadline=deadline)
-
-
-class List(Task):
-
-    def __init__(self, name):
+    def __call__(self, parser, namespace, values, option_string=None):
         self.tasks = dict()
-        self.name = name
         self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        if option_string == '-i':
+            name = values
+        if option_string == '-a':
+            print self.name
+            self.add(name, *values)
+        if option_string == '-e':
+            self.edit(name, *values)
+        if option_string == '-d':
+            self.delete(name, values)
+        if option_string == '-p':
+            self.print_all(name)
 
     def add(self, task_id, description, priority, deadline):
         tasks = self.pull_from_redis(False)
@@ -77,6 +81,17 @@ class List(Task):
 
 
 if __name__ == '__main__':
-    t = List('ToDo')
-    t.delete()
-
+    parser = argparse.ArgumentParser(description='Work with Redis database.')
+    parser.add_argument('args', metavar='N', nargs='?',
+                        help='an integer for the accumulator')
+    parser.add_argument('-i', '--init', action=List, nargs=1,
+                        help='Initiating a new list')
+    parser.add_argument('-a', '--add', action=List, nargs=4,
+                        help='Adding task to list')
+    parser.add_argument('-e', '--edit', action=List, nargs=4,
+                        help='Editing task in list')
+    parser.add_argument('-d', '--del', action=List,
+                        help='Deleting task from list')
+    parser.add_argument('-p', action=List, nargs=0,
+                        help='Printing all the tasks in list')
+    args = parser.parse_args()
