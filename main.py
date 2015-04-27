@@ -9,7 +9,8 @@ import logging
 
 class List(argparse.Action):
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
+                        level=logging.DEBUG, filename='mylog.log')
 
     def __call__(self, parser, namespace, values, option_string):
         self.tasks = dict()
