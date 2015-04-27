@@ -1,7 +1,7 @@
 # redis
 
 <p>-i task_list_name -a args</p>
-<p>adding task to the task_list_name list</p>
+<p style="text-indent: 2em">adding task to the task_list_name list</p>
 
 -i task_list_name -e args
     editing task in the task_list_name list
