@@ -12,7 +12,7 @@ class Task(object):
         self.context = dict(description=description, priority=priority, deadline=deadline)
 
 
-class List(object):
+class List(Task):
 
     def __init__(self, name):
         self.tasks = dict()
@@ -20,48 +20,54 @@ class List(object):
         self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
     def add(self, task_id, description, priority, deadline):
-        tasks = self.r.get(self.name)
-        if tasks is not None:
-            tasks = self.decode_json(tasks)
-        else:
-            tasks = dict()
+        tasks = self.pull_from_redis(False)
         task_id = str(task_id)
         tasks[task_id] = dict(description=description, priority=priority, deadline=deadline)
         self.push_to_redis(tasks)
+        print("The task was successfully added")
 
-    def delete(self, task_id):
-        tasks = self.r.get(self.name)
-        if tasks is not None:
-            tasks = self.decode_json(tasks)
+    def delete(self, task_id='all'):
+        if task_id == 'all':
+            self.r.flushdb()
+            print("Task list was successfully deleted")
         else:
-            raise "Database is empty. Nothing to delete."
-        del tasks[str(task_id)]
-        self.push_to_redis(tasks)
+            tasks = self.pull_from_redis()
+            del tasks[str(task_id)]
+            self.push_to_redis(tasks)
+            print("The task was successfully deleted")
 
     def edit(self, task_id, description, priority, deadline):
-        tasks = self.r.get(self.name)
-        if tasks is not None:
-            tasks = self.decode_json(tasks)
-        else:
-            raise "Database is empty. Nothing to edit"
+        tasks = self.pull_from_redis()
         tasks[str(task_id)] = dict(description=description, priority=priority, deadline=deadline)
         self.push_to_redis(tasks)
+        print("The task was successfully edited")
 
     def print_all(self):
-        tasks = self.r.get(self.name)
-        if tasks is not None:
-            tasks = self.decode_json(tasks)
+        tasks = self.pull_from_redis(False)
+        if tasks and tasks is not None:
+            for key, value in tasks.iteritems():
+                print("Task №%d: ") % (int(key))
+                for k, v in value.iteritems():
+                    print("%s: %s") % (k, v)
         else:
-            raise "Database is empty. Nothing to print"
-        for key, value in tasks.iteritems():
-            print("Task №%d: ") % (int(key))
-            for k, v in value.iteritems():
-                print("%s: %s") % (k, v)
-
+            print('Oops..smth went wrong. List is empty')
 
     def push_to_redis(self, tasks):
         tasks_json = self.encode_json(tasks)
         self.r.set(self.name, tasks_json)
+
+    def pull_from_redis(self, flag=True):
+        # flag - to decide whether we should raise an exception
+        tasks = self.r.get(self.name)
+        if tasks is not None and tasks:
+            tasks = self.decode_json(tasks)
+            return tasks
+        else:
+            if flag:
+                raise IndexError("Oops..smth went wrong. Database is empty.")
+            else:
+                tasks = dict()
+                return tasks
 
     def encode_json(self, task):
         return json.dumps(task, sort_keys=True, separators=(',', ': '))
@@ -72,9 +78,5 @@ class List(object):
 
 if __name__ == '__main__':
     t = List('ToDo')
-    t.add('5', 'b', 0, 15)
-    t.add('3', 'c', 0, 15)
-    t.edit('3', 'abc', 0, 15)
-    t.add('1', 'abc', 0, 15)
-    t.delete(1)
-    t.print_all()
+    t.delete()
+
