@@ -7,31 +7,46 @@ import redis
 import json
 
 
-class List():
+class List(object):
     # log configuration
     # all the errors are to be found in mylog.log
     logging.basicConfig(format='%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
                         level=logging.DEBUG, filename='mylog.log')
+    tasks = dict()
+    # connecting to Redis
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    # dumb manipulations with tasks list name
 
-    def __init__(self, name=None):
-        self.tasks = dict()
-        # connecting to Redis
-        self.r = redis.StrictRedis(host='localhost', port=6379, db=0)
-        # dumb manipulations with tasks list name
+    # json encode
+    @staticmethod
+    def encode_json(task):
+        return json.dumps(task, sort_keys=True, separators=(',', ': '))
 
-    def add_window(self):
+    @staticmethod
+    # json decode
+    def decode_json(task):
+        return json.loads(task)
+
+    @staticmethod
+    # json encode
+    def get_args(entry):
+        args = entry.get()
+        return args.split(',')
+
+    @staticmethod
+    def add_window():
 
         def add_task():
-            args = self.get_args(a_entry)
+            args = List.get_args(a_entry)
             name = args[0]
             task_id = args[1]
             description = args[2]
             priority = args[3]
             deadline = args[4]
-            tasks = self.pull_from_redis(name, False)
+            tasks = List.pull_from_redis(name, False)
             task_id = str(task_id)
             tasks[task_id] = dict(description=description, priority=priority, deadline=deadline)
-            self.push_to_redis(name, tasks)
+            List.push_to_redis(name, tasks)
             label = Label(a_window, text="The task was successfully added")
             label.pack()
             logging.info('The task was successfully added')
@@ -46,10 +61,11 @@ class List():
         a_button = Button(a_window, bg="red", text="Добавить", command=add_task)
         a_button.pack()
 
-    def delete_window(self):
+    @staticmethod
+    def delete_window():
 
         def delete_db():
-            self.r.flushdb()
+            List.r.flushdb()
             d_label = Label(d_window, text="All the database was successfully cleared")
             d_label.pack()
             logging.info("All the database was successfully cleared")
@@ -61,9 +77,9 @@ class List():
             d_entry.pack()
 
             def delete():
-                args = self.get_args(d_entry)
+                args = List.get_args(d_entry)
                 name = args[0]
-                self.r.delete(name)
+                List.r.delete(name)
                 d_label = Label(d_window, text="Task list was successfully deleted")
                 d_label.pack()
                 logging.info("Task list was successfully deleted")
@@ -78,12 +94,12 @@ class List():
             d_entry.pack()
 
             def delete():
-                args = self.get_args(d_entry)
+                args = List.get_args(d_entry)
                 name = args[0]
                 task_id = args[1]
-                tasks = self.pull_from_redis(name)
+                tasks = List.pull_from_redis(name)
                 del tasks[str(task_id)]
-                self.push_to_redis(name, tasks)
+                List.push_to_redis(name, tasks)
                 d_label = Label(d_window, text="The task was successfully deleted")
                 d_label.pack()
                 logging.info("Task list was successfully deleted")
@@ -101,18 +117,19 @@ class List():
         d_button = Button(d_window, bg="red", text="Delete Task", command=delete_task)
         d_button.pack()
 
-    def edit_window(self):
+    @staticmethod
+    def edit_window():
 
         def edit_task():
-            args = self.get_args(e_entry)
+            args = List.get_args(e_entry)
             name = args[0]
             task_id = args[1]
             description = args[2]
             priority = args[3]
             deadline = args[4]
-            tasks = self.pull_from_redis(name)
+            tasks = List.pull_from_redis(name)
             tasks[str(task_id)] = dict(description=description, priority=priority, deadline=deadline)
-            self.push_to_redis(name, tasks)
+            List.push_to_redis(name, tasks)
             label = Label(e_window, text="The task was successfully edited")
             label.pack()
             logging.info("The task was successfully edited")
@@ -127,11 +144,12 @@ class List():
         e_button = Button(e_window, bg="red", text="Изменить", command=edit_task)
         e_button.pack()
 
-    def print_window(self):
+    @staticmethod
+    def print_window():
 
         def print_all():
             # print("Here are the names of all the task lists:")
-            tasks = self.r.keys()
+            tasks = List.r.keys()
             if tasks:
                 # print("Here are the names of all the task lists:")
                 label = Label(p_window, text="Here are the names of all the task lists:")
@@ -140,9 +158,9 @@ class List():
                     label1 = Label(p_window, text=task)
                     label1.pack()
             else:
-                label1 = Label(root, text='Oops..smth went wrong. List is empty')
+                label1 = Label(p_window, text='Oops..smth went wrong. DB is empty')
                 label1.pack()
-                logging.warning('Oops..smth went wrong. List is empty')
+                logging.warning('Oops..smth went wrong. DB is empty')
 
         def print_task_list():
             invite_label = Label(p_window, text="Enter task list name to print")
@@ -152,9 +170,9 @@ class List():
 
             def printt():
                 # printing all the tasks in the task list
-                args = self.get_args(p_entry)
+                args = List.get_args(p_entry)
                 name = args[0]
-                tasks = self.pull_from_redis(name, False)
+                tasks = List.pull_from_redis(name, False)
                 if tasks and tasks is not None:
                     for key, value in tasks.iteritems():
                         string = "Task №" + str(key)
@@ -180,17 +198,19 @@ class List():
         p_button = Button(p_window, bg="red", text="Print concrete task list", command=print_task_list)
         p_button.pack()
 
+    @staticmethod
     # pushing in db
-    def push_to_redis(self, name, tasks):
-        tasks_json = self.encode_json(tasks)
-        self.r.set(name, tasks_json)
+    def push_to_redis(name, tasks):
+        tasks_json = List.encode_json(tasks)
+        List.r.set(name, tasks_json)
 
     # pulling from db
-    def pull_from_redis(self, name, flag=True):
+    @staticmethod
+    def pull_from_redis(name, flag=True):
         # flag - to decide whether we should raise an exception
-        tasks = self.r.get(name)
+        tasks = List.r.get(name)
         if tasks is not None and tasks:
-            tasks = self.decode_json(tasks)
+            tasks = List.decode_json(tasks)
             return tasks
         else:
             if flag:
@@ -199,36 +219,18 @@ class List():
                 tasks = dict()
                 return tasks
 
-    # json encode
-    def encode_json(self, task):
-        return json.dumps(task, sort_keys=True, separators=(',', ': '))
-
-    # json decode
-    def decode_json(self, task):
-        return json.loads(task)
-
-    # json encode
-    def get_args(self, entry):
-        args = entry.get()
-        return args.split(',')
-
-
-def button_clicked():
-    print "Клик!"
-
 
 root = Tk()
 root.title('Менеджер задач для Redis')
 root.geometry('500x400+300+200')  # ширина=500, высота=400, x=300, y=200
-l = List()
 label = Label(root, text="Что вы хотите сделать?")
 label.pack()
-add_button = Button(root, bg="red", text="Добавить", command=l.add_window)
+add_button = Button(root, bg="red", text="Добавить", command=List.add_window)
 add_button.pack()
-delete_button = Button(root, bg="red", text="Удалить", command=l.delete_window)
+delete_button = Button(root, bg="red", text="Удалить", command=List.delete_window)
 delete_button.pack()
-edit_button = Button(root, bg="red", text="Изменить", command=l.edit_window)
+edit_button = Button(root, bg="red", text="Изменить", command=List.edit_window)
 edit_button.pack()
-print_button = Button(root, bg="red", text="Вывести", command=l.print_window)
+print_button = Button(root, bg="red", text="Вывести", command=List.print_window)
 print_button.pack()
 root.mainloop()
