@@ -2,6 +2,7 @@
 __author__ = 'user'
 
 from Tkinter import *
+from ttk import *
 import logging
 import redis
 import json
@@ -221,16 +222,18 @@ class List(object):
 
 
 root = Tk()
+style = Style()
+style.theme_use('clam')
 root.title('Менеджер задач для Redis')
 root.geometry('500x400+300+200')  # ширина=500, высота=400, x=300, y=200
 label = Label(root, text="Что вы хотите сделать?")
 label.pack()
-add_button = Button(root, bg="red", text="Добавить", command=List.add_window)
+add_button = Button(root, text="Добавить", command=List.add_window)
 add_button.pack()
-delete_button = Button(root, bg="red", text="Удалить", command=List.delete_window)
+delete_button = Button(root, text="Удалить", command=List.delete_window)
 delete_button.pack()
-edit_button = Button(root, bg="red", text="Изменить", command=List.edit_window)
+edit_button = Button(root, text="Изменить", command=List.edit_window)
 edit_button.pack()
-print_button = Button(root, bg="red", text="Вывести", command=List.print_window)
+print_button = Button(root, text="Вывести", command=List.print_window)
 print_button.pack()
 root.mainloop()
