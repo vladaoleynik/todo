@@ -127,28 +127,58 @@ class List():
         e_button = Button(e_window, bg="red", text="Изменить", command=edit_task)
         e_button.pack()
 
-    def print_all(self, name):
-        if name is None:
-            # printing names of all the task lists in db
+    def print_window(self):
+
+        def print_all():
+            # print("Here are the names of all the task lists:")
             tasks = self.r.keys()
             if tasks:
                 # print("Here are the names of all the task lists:")
-                label = Label(root, text="Here are the names of all the task lists:")
+                label = Label(p_window, text="Here are the names of all the task lists:")
                 label.pack()
                 for task in tasks:
-                    print task
+                    label1 = Label(p_window, text=task)
+                    label1.pack()
             else:
+                label1 = Label(root, text='Oops..smth went wrong. List is empty')
+                label1.pack()
                 logging.warning('Oops..smth went wrong. List is empty')
-        else:
-            # printing all the tasks in the task list
-            tasks = self.pull_from_redis(name, False)
-            if tasks and tasks is not None:
-                for key, value in tasks.iteritems():
-                    print "Task №%d: " % (int(key))
-                    for k, v in value.iteritems():
-                        print "%s: %s" % (k, v)
-            else:
-                logging.warning('Oops..smth went wrong. List is empty')
+
+        def print_task_list():
+            invite_label = Label(p_window, text="Enter task list name to print")
+            invite_label.pack()
+            p_entry = Entry(p_window, width=400)
+            p_entry.pack()
+
+            def printt():
+                # printing all the tasks in the task list
+                args = self.get_args(p_entry)
+                name = args[0]
+                tasks = self.pull_from_redis(name, False)
+                if tasks and tasks is not None:
+                    for key, value in tasks.iteritems():
+                        string = "Task №" + str(key)
+                        label1 = Label(p_window, text=string)
+                        label1.pack()
+                        for k, v in value.iteritems():
+                            string = k + ': ' + v
+                            label1 = Label(p_window, text=string)
+                            label1.pack()
+                else:
+                    label1 = Label(root, text='Oops..smth went wrong. List is empty')
+                    label1.pack()
+                    logging.warning('Oops..smth went wrong. List is empty')
+
+            p_button = Button(p_window, bg="red", text="Вывести", command=printt)
+            p_button.pack()
+
+        p_window = Toplevel()
+        p_window.title('Вывести из Redis')
+        p_window.geometry('500x400+300+200')  # ширина=500, высота=400, x=300, y=200
+        p_task_list_button = Button(p_window, bg="red", text="Print all task lists in DB", command=print_all)
+        p_task_list_button.pack()
+        p_button = Button(p_window, bg="red", text="Print concrete task list", command=print_task_list)
+        p_button.pack()
 
     # pushing in db
     def push_to_redis(self, name, tasks):
@@ -199,4 +229,6 @@ delete_button = Button(root, bg="red", text="Удалить", command=l.delete_w
 delete_button.pack()
 edit_button = Button(root, bg="red", text="Изменить", command=l.edit_window)
 edit_button.pack()
+print_button = Button(root, bg="red", text="Вывести", command=l.print_window)
+print_button.pack()
 root.mainloop()
