@@ -9,6 +9,7 @@ __pycache__/
 .Python
 env/
 .idea/
+*.rdb
 build/
 develop-eggs/
 dist/
