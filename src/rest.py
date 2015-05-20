@@ -8,16 +8,19 @@ from bottle import route, run, request
 redis = List.connection()
 
 
+# print all the task lists
 @route('/todo/tasks', method='GET')
 def tasks_list():
     return List.print_all(redis, None)
 
 
+# print all the tasks in concrete task list
 @route('/todo/tasks/<name>', method='GET')
 def get_task(name):
     return List.print_all(redis, name)
 
 
+# add task to concrete task list
 @route('/todo/tasks/<name>', method='POST')
 def add_tasks(name):
     description = request.forms.get('description')
@@ -30,6 +33,7 @@ def add_tasks(name):
             return '201 Create\n'
 
 
+# edit task in concrete task list
 @route('/todo/tasks/<name>/<task_id:int>', method='PUT')
 def edit_tasks(name, task_id):
     description = request.forms.get('description')
@@ -41,6 +45,7 @@ def edit_tasks(name, task_id):
         return '200 OK\n'
 
 
+# delete all the task lists (the whole db)
 @route('/todo/tasks', method='DELETE')
 def clear_db():
     if List.delete(redis, None, 'all'):
@@ -49,6 +54,7 @@ def clear_db():
         return '200 OK\n'
 
 
+# delete the task list
 @route('/todo/tasks/<task_name>', method='DELETE')
 def clear_db(task_name):
     if List.delete(redis, task_name, 'all'):
@@ -57,6 +63,7 @@ def clear_db(task_name):
         return '200 OK\n'
 
 
+# delete the task from task list
 @route('/todo/tasks/<task_name>/<task_id>', method='DELETE')
 def clear_db(task_name, task_id):
     if List.delete(redis, task_name, task_id):
