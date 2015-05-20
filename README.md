@@ -18,28 +18,28 @@ Required data (at least one of these items):<br/>
 <strong>Example:</strong> curl -X PUT -d "description=bla" http://localhost:8080/todo/tasks/list/1
 ## Delete information
 Helps to delete data.<br/>
-###Clearing the whole DB
+### Clearing the whole DB
 Deleting all the task lists.<br/>
 /todo/tasks DELETE-method<br/>
 Required data: none<br/>
 <strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks
-###Clearing the task list
+### Clearing the task list
 Deleting all the tasks in task list.<br/>
 /todo/tasks/<task_name> DELETE-method<br/>
 Required data: none<br/>
 <strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks/list
-###Deleting the task
+### Deleting the task
 Deleting the task from task list.<br/>
 /todo/tasks/<task_name>/<task_id> DELETE-method<br/>
 Required data: none<br/>
 <strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks/list/2
 ## Print information
-###Printing all the task lists
+### Printing all the task lists
 Printing the names of all task lists in our db.<br/>
 /todo/tasks GET-method<br/>
 Required data: none<br/>
 <strong>Example:</strong> curl -X GET http://localhost:8080/todo/tasks
-###Printing all the tasks
+### Printing all the tasks
 Printing all the tasks in task list.<br/>
 /todo/tasks/<name> GET-method<br/>
 Required data: none<br/>
