@@ -41,4 +41,12 @@ def edit_tasks(name, task_id):
         return '200 OK\n'
 
 
+@route('/todo/tasks', method='DELETE')
+def clear_db():
+    if List.delete(redis, None, 'all'):
+        return '500 Server error\n'
+    else:
+        return '200 OK\n'
+
+
 run(host='localhost', port=8080, debug=True)
