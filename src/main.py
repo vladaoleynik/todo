@@ -51,21 +51,21 @@ class List(argparse.Action):
         return redis.StrictRedis(host='localhost', port=6379, db=0)
 
     @staticmethod
-    def add(redis, name, task_id, description, priority, deadline):
+    def add(redis, name, description, priority, deadline):
         """
         Function to add tasks to our task list in Redis
         :param redis: Redis connection
         :param name: task name
-        :param task_id: task id
         :param description: task description
         :param priority: task priority
         :param deadline: deadline for task
         """
         tasks = List.pull_from_redis(redis, name, False)
-        task_id = str(task_id)
+        task_id = str(len(tasks)+1)
         tasks[task_id] = dict(description=description, priority=priority, deadline=deadline)
         List.push_to_redis(redis, name, tasks)
         logging.info('The task was successfully added')
+        return 0
 
     @staticmethod
     def delete(redis, name, task_id):
@@ -79,16 +79,19 @@ class List(argparse.Action):
             # db clear
             redis.flushdb()
             logging.info("All the database was successfully cleared")
+            return 0
         elif name and task_id == 'all':
             # deleting a single task list
             redis.delete(name)
             logging.info("Task list was successfully deleted")
+            return 0
         else:
             # deleting a single task from concrete list
             tasks = List.pull_from_redis(redis, name)
             del tasks[str(task_id)]
             List.push_to_redis(redis, name, tasks)
             logging.info("The task was successfully deleted")
+            return 0
 
     @staticmethod
     def edit(redis, name, task_id, description, priority, deadline):
@@ -105,6 +108,7 @@ class List(argparse.Action):
         tasks[str(task_id)] = dict(description=description, priority=priority, deadline=deadline)
         List.push_to_redis(redis, name, tasks)
         logging.info("The task was successfully edited")
+        return 0
 
     @staticmethod
     def print_all(redis, name):
@@ -113,25 +117,32 @@ class List(argparse.Action):
         :param redis: Redis connection
         :param name: task name
         """
+        stri = ''
         if name is None:
             # printing names of all the task lists in db
             tasks = redis.keys()
             if tasks:
-                print("Here are the names of all the task lists:")
+                stri = "Here are the names of all the task lists:\n"
                 for task in tasks:
-                    print task
+                    stri += task + '\n'
+                print stri
+                return stri
             else:
                 logging.warning('Oops..smth went wrong. List is empty')
+                return 'Nothing to print.'
         else:
             # printing all the tasks in the task list
             tasks = List.pull_from_redis(redis, name, False)
             if tasks and tasks is not None:
                 for key, value in tasks.iteritems():
-                    print "Task №%d: " % (int(key))
+                    stri = 'Task ' + key + ': ' + '\n'
                     for k, v in value.iteritems():
-                        print "%s: %s" % (k, v)
+                        stri += k + ': ' + v + '\n'
+                    stri += '--------------\n'
+                return stri
             else:
                 logging.warning('Oops..smth went wrong. List is empty')
+                return 'Nothing to print.'
 
     # pushing in db
     @staticmethod
