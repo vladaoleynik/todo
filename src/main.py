@@ -40,7 +40,7 @@ class List(argparse.Action):
         if option_string == '-d':
             List.delete(self.r, name, values)
         if option_string == '-p':
-            List.print_all(self.r, name)
+            print List.print_all(self.r, name)
 
     @staticmethod
     def connection():
@@ -126,7 +126,6 @@ class List(argparse.Action):
         :param redis: Redis connection
         :param name: task name
         """
-        stri = ''
         if name is None:
             # printing names of all the task lists in db
             tasks = redis.keys()
@@ -134,17 +133,17 @@ class List(argparse.Action):
                 stri = "Here are the names of all the task lists:\n"
                 for task in tasks:
                     stri += task + '\n'
-                print stri
                 return stri
             else:
                 logging.warning('Oops..smth went wrong. List is empty')
                 return 'Nothing to print.'
         else:
             # printing all the tasks in the task list
+            stri = ''
             tasks = List.pull_from_redis(redis, name, False)
             if tasks and tasks is not None:
                 for key, value in tasks.iteritems():
-                    stri = 'Task ' + key + ': ' + '\n'
+                    stri += 'Task ' + key + ': ' + '\n'
                     for k, v in value.iteritems():
                         stri += k + ': ' + v + '\n'
                     stri += '--------------\n'
