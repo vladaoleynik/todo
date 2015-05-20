@@ -56,7 +56,7 @@ def clear_db():
 
 # delete the task list
 @route('/todo/tasks/<task_name>', method='DELETE')
-def clear_db(task_name):
+def clear_task_list(task_name):
     if List.delete(redis, task_name, 'all'):
         return '500 Server error\n'
     else:
@@ -65,7 +65,7 @@ def clear_db(task_name):
 
 # delete the task from task list
 @route('/todo/tasks/<task_name>/<task_id>', method='DELETE')
-def clear_db(task_name, task_id):
+def delete_task(task_name, task_id):
     if List.delete(redis, task_name, task_id):
         return '500 Server error\n'
     else:
