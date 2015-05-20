@@ -94,7 +94,7 @@ class List(argparse.Action):
             return 0
 
     @staticmethod
-    def edit(redis, name, task_id, description, priority, deadline):
+    def edit(redis, name, task_id, description='', priority='', deadline=''):
         """
         Function to edit entries in our task lists
         :param redis: Redis connection
@@ -105,7 +105,16 @@ class List(argparse.Action):
         :param deadline: deadline for task
         """
         tasks = List.pull_from_redis(redis, name)
-        tasks[str(task_id)] = dict(description=description, priority=priority, deadline=deadline)
+        desc = tasks[str(task_id)]["description"]
+        pr = tasks[str(task_id)]["priority"]
+        dl = tasks[str(task_id)]["deadline"]
+        if description:
+            desc = description
+        if priority:
+            pr = priority
+        if deadline:
+            dl = deadline
+        tasks[str(task_id)] = dict(description=desc, priority=pr, deadline=dl)
         List.push_to_redis(redis, name, tasks)
         logging.info("The task was successfully edited")
         return 0
