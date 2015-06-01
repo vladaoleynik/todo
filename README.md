@@ -1,5 +1,5 @@
 # REST API on Bottle framework
-To work with API use curl!<br/>
+To work with API use curl, please!<br/>
 <br/>
 <strong> Add information</strong><br/>
 Helps to add task to concrete task list.<br/>
@@ -64,6 +64,3 @@ Example: curl -X GET http://localhost:8080/todo/tasks/list
 <strong>-p</strong> - printing names of all existing in db task lists
 
 <strong>-i task_list_name -p</strong> - printing all the tasks from task_list_name list
-
-
-
