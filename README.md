@@ -3,16 +3,16 @@ To work with API use curl, please!<br/>
 <br/>
 <strong> Add information</strong><br/>
 Helps to add task to concrete task list.<br/>
-/todo/tasks/<task_name> POST-method<br/>
+/todo/tasks/(task_name) POST-method<br/>
 Required data:<br/>
 task description;<br/>
 task importance;<br/>
 task deadline;<br/>
-Example: curl -X POST -d "description=0&deadline=0&importance=0" http://localhost:8080/todo/tasks
+Example: curl -X POST -d "description=0&deadline=0&importance=0" http://localhost:8080/todo/tasks/list
 <br/>
 <br/><strong>Edit information</strong><br/>
 Helps to edit task in concrete task list.<br/>
-/todo/tasks/<task_name>/<task_id:int> PUT-method<br/>
+/todo/tasks/(task_name)/(task_id:int) PUT-method<br/>
 Required data (at least one of these items):<br/>
 task description;<br/>
 task importance;<br/>
@@ -27,13 +27,13 @@ Example: curl -X DELETE http://localhost:8080/todo/tasks
 <br/>
 <br/><strong>Clearing the task list</strong><br/>
 Deleting all the tasks in task list.<br/>
-/todo/tasks/<task_name> DELETE-method<br/>
+/todo/tasks/(task_name) DELETE-method<br/>
 Required data: none<br/>
 Example: curl -X DELETE http://localhost:8080/todo/tasks/list
 <br/>
 <br/><strong>Deleting the task</strong><br/>
 Deleting the task from task list.<br/>
-/todo/tasks/<task_name>/<task_id> DELETE-method<br/>
+/todo/tasks/(task_name)/(task_id) DELETE-method<br/>
 Required data: none<br/>
 Example: curl -X DELETE http://localhost:8080/todo/tasks/list/2
 <br/>
@@ -45,7 +45,7 @@ Example: curl -X GET http://localhost:8080/todo/tasks
 <br/>
 <br/><strong>Printing all the tasks</strong><br/>
 Printing all the tasks in task list.<br/>
-/todo/tasks/<name> GET-method<br/>
+/todo/tasks/(name) GET-method<br/>
 Required data: none<br/>
 Example: curl -X GET http://localhost:8080/todo/tasks/list
 
