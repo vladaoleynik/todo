@@ -1,49 +1,53 @@
 # REST API on Bottle framework
-To work with API use curl!
-## Add information
+To work with API use curl!<br/>
+<br/>
+<strong> Add information</strong><br/>
 Helps to add task to concrete task list.<br/>
 /todo/tasks/<task_name> POST-method<br/>
 Required data:<br/>
-- task description<br/>
-- task importance<br/>
-- task deadline<br/>
-<strong>Example:</strong> curl -X POST -d "description=0&deadline=0&importance=0" http://localhost:8080/todo/tasks
-## Edit information
+task description;<br/>
+task importance;<br/>
+task deadline;<br/>
+Example: curl -X POST -d "description=0&deadline=0&importance=0" http://localhost:8080/todo/tasks
+<br/>
+<br/><strong>Edit information</strong><br/>
 Helps to edit task in concrete task list.<br/>
 /todo/tasks/<task_name>/<task_id:int> PUT-method<br/>
 Required data (at least one of these items):<br/>
-- task description<br/>
-- task importance<br/>
-- task deadline<br/>
-<strong>Example:</strong> curl -X PUT -d "description=bla" http://localhost:8080/todo/tasks/list/1
-## Delete information
-Helps to delete data.<br/>
-###Clearing the whole DB
+task description;<br/>
+task importance;<br/>
+task deadline;<br/>
+Example: curl -X PUT -d "description=bla" http://localhost:8080/todo/tasks/list/1
+<br/>
+<br/><strong>Clearing the whole DB</strong><br/>
 Deleting all the task lists.<br/>
 /todo/tasks DELETE-method<br/>
 Required data: none<br/>
-<strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks
-###Clearing the task list
+Example: curl -X DELETE http://localhost:8080/todo/tasks
+<br/>
+<br/><strong>Clearing the task list</strong><br/>
 Deleting all the tasks in task list.<br/>
 /todo/tasks/<task_name> DELETE-method<br/>
 Required data: none<br/>
-<strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks/list
-###Deleting the task
+Example: curl -X DELETE http://localhost:8080/todo/tasks/list
+<br/>
+<br/><strong>Deleting the task</strong><br/>
 Deleting the task from task list.<br/>
 /todo/tasks/<task_name>/<task_id> DELETE-method<br/>
 Required data: none<br/>
-<strong>Example:</strong> curl -X DELETE http://localhost:8080/todo/tasks/list/2
-## Print information
-###Printing all the task lists
+Example: curl -X DELETE http://localhost:8080/todo/tasks/list/2
+<br/>
+<br/><strong>Printing all the task lists</strong><br/>
 Printing the names of all task lists in our db.<br/>
 /todo/tasks GET-method<br/>
 Required data: none<br/>
-<strong>Example:</strong> curl -X GET http://localhost:8080/todo/tasks
-###Printing all the tasks
+Example: curl -X GET http://localhost:8080/todo/tasks
+<br/>
+<br/><strong>Printing all the tasks</strong><br/>
 Printing all the tasks in task list.<br/>
 /todo/tasks/<name> GET-method<br/>
 Required data: none<br/>
-<strong>Example:</strong> curl -X GET http://localhost:8080/todo/tasks/list
+Example: curl -X GET http://localhost:8080/todo/tasks/list
 
 # Working with argparse
 
@@ -60,6 +64,3 @@ Required data: none<br/>
 <strong>-p</strong> - printing names of all existing in db task lists
 
 <strong>-i task_list_name -p</strong> - printing all the tasks from task_list_name list
-
-
-
