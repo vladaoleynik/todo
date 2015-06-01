@@ -8,7 +8,8 @@ Required data:<br/>
 task description;<br/>
 task importance;<br/>
 task deadline;<br/>
-Example: curl -X POST -d "description=0&deadline=0&importance=0" http://localhost:8080/todo/tasks/list
+Example: curl -H "Content-Type: application/json" -X POST -d 
+'{"description":0,"deadline":0,"importance":0}' http://localhost:8080/todo/tasks/list
 <br/>
 <br/><strong>Edit information</strong><br/>
 Helps to edit task in concrete task list.<br/>
@@ -17,7 +18,7 @@ Required data (at least one of these items):<br/>
 task description;<br/>
 task importance;<br/>
 task deadline;<br/>
-Example: curl -X PUT -d "description=bla" http://localhost:8080/todo/tasks/list/1
+Example: curl -H "Content-Type: application/json" -X PUT -d '{"description":bla}' http://localhost:8080/todo/tasks/list/1
 <br/>
 <br/><strong>Clearing the whole DB</strong><br/>
 Deleting all the task lists.<br/>
